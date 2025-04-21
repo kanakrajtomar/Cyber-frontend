@@ -3,12 +3,15 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import "./App.css"
+import React from 'react'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
   const [url, setUrl] = useState("")
   const [result, setResult] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [scanProgress, setScanProgress] = useState(0)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     // Initialize animation
@@ -37,6 +40,7 @@ function App() {
 
     setIsLoading(true)
     setResult("")
+    setError(null)
 
     try {
       // Simulate scanning animation
@@ -45,7 +49,9 @@ function App() {
       const response = await axios.post("https://cyberr-backend.onrender.com/api/check-link", { url })
       setResult(response.data.message)
     } catch (err) {
-      setResult("Error: Unable to analyze link. Please try again.")
+      console.error("API Error:", err)
+      setError("Error: Unable to analyze link. Please try again.")
+      setResult("")
     } finally {
       setIsLoading(false)
       setScanProgress(0)
@@ -57,118 +63,133 @@ function App() {
     return result.includes("safe") ? "safe-status" : "danger-status"
   }
 
-  return (
-    <div className="app-container">
-      <div className="cyber-background">
-        <div className="grid-overlay"></div>
-        <div className="glow-effect"></div>
+  // If there's an error, display it
+  if (error) {
+    return (
+      <div className="app-container">
+        <div className="error-container">
+          <h2>Something went wrong</h2>
+          <p>{error}</p>
+          <button onClick={() => setError(null)}>Try Again</button>
+        </div>
       </div>
+    )
+  }
 
-      <header className="app-header">
-        <div className="logo">
-          <span className="logo-text">CYBER</span>
-          <span className="logo-sub">SHIELD</span>
+  return (
+    <ErrorBoundary>
+      <div className="app-container">
+        <div className="cyber-background">
+          <div className="grid-overlay"></div>
+          <div className="glow-effect"></div>
         </div>
-        <nav className="nav-links">
-          <a href="/" className="nav-link">
-            Home
-          </a>
-          <a href="/about" className="nav-link">
-            About
-          </a>
-          <a href="/services" className="nav-link">
-            Services
-          </a>
-          <a href="/contact" className="nav-link">
-            Contact
-          </a>
-        </nav>
-      </header>
 
-      <main className="main-content">
-        <div className="hero-section">
-          <h1 className="glitch-text" data-text="LINK SECURITY SCANNER">
-            Check the link that you got in sms
-          </h1>
-          <p className="sub-heading">Analyze is it a scam or legit</p>
+        <header className="app-header">
+          <div className="logo">
+            <span className="logo-text">CYBER</span>
+            <span className="logo-sub">SHIELD</span>
+          </div>
+          <nav className="nav-links">
+            <a href="/" className="nav-link">
+              Home
+            </a>
+            <a href="/about" className="nav-link">
+              About
+            </a>
+            <a href="/services" className="nav-link">
+              Services
+            </a>
+            <a href="/contact" className="nav-link">
+              Contact
+            </a>
+          </nav>
+        </header>
 
-          <div className="scanner-container">
-            <form onSubmit={handleSubmit} className="scanner-form">
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="Enter URL to scan..."
-                  className="url-input"
-                  disabled={isLoading}
-                />
-                <div className="input-focus-line"></div>
-              </div>
+        <main className="main-content">
+          <div className="hero-section">
+            <h1 className="glitch-text" data-text="LINK SECURITY SCANNER">
+              Check the link that you got in sms
+            </h1>
+            <p className="sub-heading">Analyze is it a scam or legit</p>
 
-              <button
-                type="submit"
-                className={`scan-button ${isLoading ? "scanning" : ""}`}
-                disabled={isLoading || !url}
-              >
-                {isLoading ? "SCANNING..." : "ANALYZE"}
-                <span className="button-glow"></span>
-              </button>
-            </form>
-
-            {isLoading && (
-              <div className="scan-progress-container">
-                <div className="scan-progress-bar">
-                  <div className="scan-progress-fill" style={{ width: `${scanProgress}%` }}></div>
+            <div className="scanner-container">
+              <form onSubmit={handleSubmit} className="scanner-form">
+                <div className="input-wrapper">
+                  <input
+                    type="text"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="Enter URL to scan..."
+                    className="url-input"
+                    disabled={isLoading}
+                  />
+                  <div className="input-focus-line"></div>
                 </div>
-                <div className="scan-status">
-                  <span className="scan-percentage">{Math.floor(scanProgress)}%</span>
-                  <span className="scan-text">Analyzing security parameters...</span>
+
+                <button
+                  type="submit"
+                  className={`scan-button ${isLoading ? "scanning" : ""}`}
+                  disabled={isLoading || !url}
+                >
+                  {isLoading ? "SCANNING..." : "ANALYZE"}
+                  <span className="button-glow"></span>
+                </button>
+              </form>
+
+              {isLoading && (
+                <div className="scan-progress-container">
+                  <div className="scan-progress-bar">
+                    <div className="scan-progress-fill" style={{ width: `${scanProgress}%` }}></div>
+                  </div>
+                  <div className="scan-status">
+                    <span className="scan-percentage">{Math.floor(scanProgress)}%</span>
+                    <span className="scan-text">Analyzing security parameters...</span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {result && (
-              <div className={`result-container ${getStatusClass()}`}>
-                <div className="result-icon"></div>
-                <div className="result-text">{result}</div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="features-section">
-          <div className="feature-card">
-            <div className="feature-icon threat-icon"></div>
-            <h3>Threat Detection</h3>
-            <p>Advanced algorithms to identify malicious URLs and phishing attempts</p>
+              {result && (
+                <div className={`result-container ${getStatusClass()}`}>
+                  <div className="result-icon"></div>
+                  <div className="result-text">{result}</div>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="feature-card">
-            <div className="feature-icon privacy-icon"></div>
-            <h3>Privacy Analysis</h3>
-            <p>Check if websites respect your data and privacy regulations</p>
-          </div>
+          <div className="features-section">
+            <div className="feature-card">
+              <div className="feature-icon threat-icon"></div>
+              <h3>Threat Detection</h3>
+              <p>Advanced algorithms to identify malicious URLs and phishing attempts</p>
+            </div>
 
-          <div className="feature-card">
-            <div className="feature-icon security-icon"></div>
-            <h3>Security Rating</h3>
-            <p>Comprehensive security score based on multiple parameters</p>
-          </div>
-        </div>
-      </main>
+            <div className="feature-card">
+              <div className="feature-icon privacy-icon"></div>
+              <h3>Privacy Analysis</h3>
+              <p>Check if websites respect your data and privacy regulations</p>
+            </div>
 
-      <footer className="app-footer">
-        <div className="footer-content">
-          <p>Cyber Fraud Detection.</p>
-          <div className="footer-links">
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Service</a>
-            <a href="/support">Support</a>
+            <div className="feature-card">
+              <div className="feature-icon security-icon"></div>
+              <h3>Security Rating</h3>
+              <p>Comprehensive security score based on multiple parameters</p>
+            </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </main>
+
+        <footer className="app-footer">
+          <div className="footer-content">
+            <p>Cyber Fraud Detection.</p>
+            <div className="footer-links">
+              <a href="/privacy">Privacy Policy</a>
+              <a href="/terms">Terms of Service</a>
+              <a href="/support">Support</a>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </ErrorBoundary>
   )
 }
 
