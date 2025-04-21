@@ -8,15 +8,11 @@ function App() {
   const [url, setUrl] = useState("")
   const [result, setResult] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
   const [scanProgress, setScanProgress] = useState(0)
 
   useEffect(() => {
     // Initialize animation
-    setIsAnimating(true)
-
     // Cleanup animation on unmount
-    return () => setIsAnimating(false)
   }, [])
 
   useEffect(() => {
@@ -74,16 +70,16 @@ function App() {
           <span className="logo-sub">SHIELD</span>
         </div>
         <nav className="nav-links">
-          <a href="#" className="nav-link">
+          <a href="/" className="nav-link">
             Home
           </a>
-          <a href="#" className="nav-link">
+          <a href="/about" className="nav-link">
             About
           </a>
-          <a href="#" className="nav-link">
+          <a href="/services" className="nav-link">
             Services
           </a>
-          <a href="#" className="nav-link">
+          <a href="/contact" className="nav-link">
             Contact
           </a>
         </nav>
@@ -166,9 +162,9 @@ function App() {
         <div className="footer-content">
           <p>Cyber Fraud Detection.</p>
           <div className="footer-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Support</a>
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+            <a href="/support">Support</a>
           </div>
         </div>
       </footer>
