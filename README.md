@@ -1,3 +1,48 @@
+# Cyber Shield Frontend
+
+A modern React application for checking website safety.
+
+## Features
+
+- Real-time URL safety checking
+- Animated scanning interface
+- Responsive design
+- Modern UI with cyber theme
+
+## Technologies Used
+
+- React
+- Axios for API calls
+- CSS animations
+- Vercel deployment
+
+## Setup
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Start development server:
+```bash
+npm start
+```
+
+3. Build for production:
+```bash
+npm run build
+```
+
+## Deployment
+
+This application is configured for deployment on Vercel.
+
+## API Integration
+
+The frontend connects to the backend API at:
+- Development: http://localhost:5000
+- Production: https://cyberr-backend.onrender.com
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
